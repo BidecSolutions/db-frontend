@@ -366,7 +366,7 @@ const [selectedSize, setSelectedSize] = useState(null);
         }
     };
 
-    const handleSubmit = (e) => {
+     const handleSubmit = (e) => {
         e.preventDefault();
     };
     const handleSelectedBrand = (data) => {
@@ -389,14 +389,36 @@ const [selectedSize, setSelectedSize] = useState(null);
     };
 
     // Handle Add to Cart Logic
-    const handleAddCart = (product) => {
-        // ❗Check if pieces/variant is not selected
-        if (!selectedVariantId) {
-            toast.warning("Please select pieces before adding to cart!");
-            return;
-        }
-        setShowQtyModal(true);
+   const handleAddCart = (product) => {
+    // ❗Check if pieces/variant is not selected
+    if (!selectedVariantId) {
+        toast.warning("Please select pieces before adding to cart!");
+        return;
+    }
+
+    // Payload ready karo
+    const payload = {
+        product_id: product?.id,
+        product_name: product?.name,
+        variant_id: selectedVariantId,
+        variant_name: selectedVariant,
+        quantity: quantity,
+        variant_price: selectedVariantPrice,
+        lid_id: selectedLidId,
+        lid_name: selectedLid,
+        lid_price: selectedLidPrice,
+        total_price:
+            (selectedVariantPrice * quantity) +
+            (selectedLidPrice ? selectedLidPrice * quantity : 0),
     };
+
+    // 🔥 Console me print
+    console.log("ADD TO CART PAYLOAD:", payload);
+
+    // Modal show karo
+    setShowQtyModal(true);
+};
+
 
     const confirmAddToCart = () => {
         const product = productDetail.product;
@@ -633,7 +655,7 @@ const [selectedSize, setSelectedSize] = useState(null);
                             Rs {selectedProductVariants[0]?.price}
                         </p>
 
-                    <form onSubmit={handleSubmit} className='max-w-130 w-full flex flex-col gap-5 '>
+                  <form onSubmit={handleSubmit} className='max-w-130 w-full flex flex-col gap-5 '>
     {/* Quantity Selection */}
     <div className="my-form border w-full border-[#1E7773] rounded-full flex items-stretch">
         <p className="my-form-heading bg-[#1E7773] rounded-l-full h-full p-1 px-5 flex items-center">Pieces</p>
@@ -803,6 +825,7 @@ const [selectedSize, setSelectedSize] = useState(null);
 
 
 
+
                         {/* <p>₨ {quantity && subQuantity && (quantity * subQuantity * productDetail.product?.current_sale_price)} / Per Pieces : {productDetail.product?.current_sale_price}</p> */}
                         <div>
                             <p className='text-sm'>
@@ -916,10 +939,6 @@ const [selectedSize, setSelectedSize] = useState(null);
                     {/* <Deals /> */}
                 </div>
                 <Review productId={productId} setProductReview={setProductReview} productReview={productReview} />
-
-
-
-
 
             </main>
             {/* Background Image */}

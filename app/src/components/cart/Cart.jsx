@@ -11,7 +11,6 @@ import CustomSeo from "../../components/CustomSeo";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-
 function Cart() {
     const { cartItems, removeFromCart, updateQuantity, updatePackSize, updateProductOption } = useCart();
     const [subtotal, setSubtotal] = useState(0);
@@ -26,13 +25,25 @@ function Cart() {
 
     const deliveryCharges = 0;
     const total = subtotal + deliveryCharges;
+    
+    useEffect(() => {
+        console.log("Cart Items:", cartItems);
+    }, [cartItems]);
 
     const handleRemove = (id) => removeFromCart(id);
+
+    // 📌 Helper function to format lid price
+    const getLidPriceDisplay = (product) => {
+        if (!product.lid_Price || product.lid_Price === 0) {
+            return "No Lid";
+        }
+        return `Rs ${Number(product.lid_Price).toLocaleString()}`;
+    };
 
     return (
         <div className="relative py-32 md:px-10 px-5 ">
             <ToastContainer autoClose={500} />
-                <CustomSeo slug="cart" />
+            <CustomSeo slug="cart" />
 
             <div className="text-white py-4">
                 <Hamburger firstPage="Home" secondPage="Cart" />
@@ -46,6 +57,8 @@ function Cart() {
                         <div className="col-span-4">Product</div>
                         <div className="col-span-2">Pack Size</div>
                         <div className="col-span-2">Quantity</div>
+                        <div className="col-span-2">Lid Price</div>  
+                        <div className="col-span-2">Printing Price</div>  
                         <div className="col-span-2">Total Pieces</div>
                         <div className="col-span-2">Total Price</div>
                     </div>
@@ -58,16 +71,22 @@ function Cart() {
 
                     {cartItems.map((product) => (
                         <div key={product.id} className="grid grid-cols-12 gap-4 py-4 border-t border-gray-600 items-center">
+                            {/* Product Column */}
                             <div className="col-span-4 flex items-center">
                                 <button className="mr-2 text-white cursor-pointer" onClick={() => handleRemove(product.id)}>
                                     <RxCross2 />
                                 </button>
-                                <img src={`${Assets_Url}${product.product_img}`} alt={product.product_name} className="w-28 h-20 border-2 border-[#1E7773] rounded-xl object-cover" />
+                                <img 
+                                    src={`${Assets_Url}${product.product_img}`} 
+                                    alt={product.product_name} 
+                                    className="w-28 h-20 border-2 border-[#1E7773] rounded-xl object-cover" 
+                                />
                                 <div className="ml-5">
                                     <h4>{product.product_name}</h4>
                                 </div>
                             </div>
 
+                            {/* Pack Size Column */}
                             <div className="col-span-2">
                                 {product.product_variants?.length > 0 && (
                                     <select
@@ -84,16 +103,48 @@ function Cart() {
                                 )}
                             </div>
 
+                            {/* Quantity Column */}
                             <div className="col-span-2 flex justify-around items-center px-2 border border-[#1E7773] w-24 rounded-lg">
-                                <button onClick={() => updateQuantity(product.id, Math.max(1, product.product_quantity - 1))} className="text-white">-</button>
-                                <input type="text" readOnly value={product.product_quantity} className="w-12 text-center bg-transparent border-none text-white" />
-                                <button onClick={() => updateQuantity(product.id, product.product_quantity + 1)} className="text-white">+</button>
+                                <button 
+                                    onClick={() => updateQuantity(product.id, Math.max(1, product.product_quantity - 1))} 
+                                    className="text-white"
+                                >
+                                    -
+                                </button>
+                                <input 
+                                    type="text" 
+                                    readOnly 
+                                    value={product.product_quantity} 
+                                    className="w-12 text-center bg-transparent border-none text-white" 
+                                />
+                                <button 
+                                    onClick={() => updateQuantity(product.id, product.product_quantity + 1)} 
+                                    className="text-white"
+                                >
+                                    +
+                                </button>
                             </div>
 
+                            {/* ✅ LID PRICE COLUMN - SHOW PRICE */}
+                            <div className="col-span-2">
+                                <div className="border border-[#1E7773] rounded-lg text-center py-2 px-1">
+                                    {product.lid_Price && product.lid_Price > 0 ? (
+                                        <>
+                                            <span className="font-semibold">Rs {Number(product.lid_Price).toLocaleString()}</span>
+                                            <span className="text-xs block text-gray-400">per piece</span>
+                                        </>
+                                    ) : (
+                                        <span className="text-gray-400">No Lid</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Total Pieces Column */}
                             <div className="col-span-2 border border-[#1E7773] w-24 rounded-lg text-center py-2">
                                 {product.total_pieces} Pcs
                             </div>
 
+                            {/* Total Price Column */}
                             <div className="col-span-2 text-2xl font-semibold">
                                 Rs: {Number(product.product_total).toLocaleString()}
                             </div>
@@ -111,13 +162,26 @@ function Cart() {
                     {cartItems.map((product) => (
                         <div key={product.id} className="flex gap-4 py-8 border-b border-gray-600 items-center">
                             <div className="flex items-center">
-                                <button className="mr-2 text-white" onClick={() => handleRemove(product.id)}><RxCross2 /></button>
-                                <img src={`${Assets_Url}${product.product_img}`} alt={product.product_name} className="w-20 h-16 border-2 border-[#1E7773] rounded-xl object-cover" />
+                                <button className="mr-2 text-white" onClick={() => handleRemove(product.id)}>
+                                    <RxCross2 />
+                                </button>
+                                <img 
+                                    src={`${Assets_Url}${product.product_img}`} 
+                                    alt={product.product_name} 
+                                    className="w-20 h-16 border-2 border-[#1E7773] rounded-xl object-cover" 
+                                />
                             </div>
                             <div className="flex flex-col gap-2">
-                                <h4>{product.product_name}</h4>
-                                <p>Rs: {Number(product.product_total).toLocaleString()}</p>
-                                <p>Qty: {product.product_quantity}</p>
+                                <h4 className="font-semibold">{product.product_name}</h4>
+                                {/* ✅ MOBILE - Lid Price Show */}
+                                {product.lid_Price && product.lid_Price > 0 && (
+                                    <p className="text-sm">
+                                        <span className="text-gray-400">Lid:</span> Rs {Number(product.lid_Price).toLocaleString()}/pc
+                                    </p>
+                                )}
+                                <p className="text-lg font-bold">Rs: {Number(product.product_total).toLocaleString()}</p>
+                                <p>Qty: {product.product_quantity} × {product.pack_size} Pcs</p>
+                                <p className="text-sm text-gray-400">Total Pieces: {product.total_pieces}</p>
                             </div>
                         </div>
                     ))}
@@ -143,21 +207,20 @@ function Cart() {
 
                         <div className="flex flex-col gap-2 mt-5">
                             <Link href="/checkout/">
-                                <button className={`bg-[#1E7773] cursor-pointer w-full rounded-lg p-2 ${cartItems.length === 0 ? 'hidden' : 'block'}`}>PURCHASE</button>
+                                <button className={`bg-[#1E7773] cursor-pointer w-full rounded-lg p-2 ${cartItems.length === 0 ? 'hidden' : 'block'}`}>
+                                    PURCHASE
+                                </button>
                             </Link>
                             <Link href="/shop/">
-                                <button className="flex items-center justify-center border text-[12px]  border-[#1E7773] w-full rounded-lg p-2">
-                                    <MdOutlineNavigateBefore size={20} /> <span className="ml-1 cursor-pointer">CONTINUE SHOPPING</span>
+                                <button className="flex items-center justify-center border text-[12px] border-[#1E7773] w-full rounded-lg p-2">
+                                    <MdOutlineNavigateBefore size={20} /> 
+                                    <span className="ml-1 cursor-pointer">CONTINUE SHOPPING</span>
                                 </button>
                             </Link>
                         </div>
                     </div>
                 </div>
             </section>
-
-            {/* Background Images */}
-            {/* <img className="absolute top-[16rem] -left-8 w-20" src={`${Image_Url}FooterAssets/footerRightImg.svg`} alt="Plate" /> */}
-            {/* <img className="absolute -bottom-30 -right-4 w-20" src={`${Image_Url}HomeAssets/PremiumAssets/shoper.svg`} alt="Plate" /> */}
         </div>
     );
 }
