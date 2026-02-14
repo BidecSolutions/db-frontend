@@ -230,6 +230,23 @@ function Checkout() {
                 `order_detail[${index}][lid]`,
                 item.lid
             );
+            formData.append(
+  `order_detail[${index}][lid_price]`,
+  item.lid_Price ? item.lid_Price : 0
+);
+
+formData.append(
+  `order_detail[${index}][printing_price]`,
+  item.printing_price ? item.printing_price : 0
+);
+const debugPayload = {};
+
+formData.forEach((value, key) => {
+    debugPayload[key] = value;
+});
+
+console.log("Final Payload Object:", debugPayload);
+
 
             if (item.logo) {
                 const blob = base64ToBlob(item.logo);

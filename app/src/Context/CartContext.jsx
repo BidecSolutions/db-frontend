@@ -27,6 +27,7 @@ export const CartProvider = ({ children }) => {
   const addToCart = (
     product_id,
     product_name,
+    printing_price,
     product_quantity,
     pack_size,
     total_pieces,
@@ -53,6 +54,7 @@ export const CartProvider = ({ children }) => {
       product_name,
       product_quantity,
       pack_size,
+      printing_price,
       total_pieces,
       price_per_piece,
       product_img,
@@ -85,10 +87,12 @@ export const CartProvider = ({ children }) => {
           const newQuantity = Math.max(1, quantity);
           const packSize = Number(item.pack_size) || 1;
           const productSubTotal =
-            item.lid_Price +
-            Number(item.price_per_piece) +
-            Number(item.option_Price || 0) +
-            Number(item?.packaging_options?.price || 0);
+  Number(item.price_per_piece) +
+  Number(item.lid_Price || 0) +
+  Number(item.option_Price || 0) +
+  Number(item.printing_price || 0) +   
+  Number(item?.packaging_options?.price || 0);
+
 
           const newTotalPieces = newQuantity * packSize;
           const newProductTotal = newTotalPieces * productSubTotal;

@@ -809,7 +809,7 @@ const [selectedSize, setSelectedSize] = useState(null);
                                 setSelectedImage(lid.image);
                             }}
                         />
-                        <label htmlFor={`lid-${lid.id}`}>{lid.name} Pcs</label>  
+                        <label>{lid.name} Pcs</label>  
                     </div>
                 ))}
 
