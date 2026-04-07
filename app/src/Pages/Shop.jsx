@@ -25,7 +25,8 @@ function Shop() {
 
   const [grid, setGrid] = useState(3);
   const [loading, setLoading] = useState(false);
-  const [visibleProducts, setVisibleProducts] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
   const [filteredProduct, setFilteredProduct] = useState([]);
   const [searchTerm, setSearchTerm] = useState(searchTermFromURL || "");
   const [filter, setFilter] = useState({
@@ -71,6 +72,7 @@ function Shop() {
   // ⭐⭐⭐ UPDATED fetchData WITH SORTING ⭐⭐⭐
   const fetchData = async () => {
     setLoading(true);
+    setCurrentPage(1);
 
     try {
       const response = await axios.public.get("search/product", {
@@ -144,11 +146,6 @@ function Shop() {
       sort_by: filters.selected || filter.sort_by,
       category_Id: filters.category_Id || filter.category_Id,
     });
-  };
-
-  const handleLoadMore = () => {
-    setShouldScroll(false);
-    setVisibleProducts((prev) => prev + 12);
   };
 
   const handleAddCartClick = (product) => {
@@ -242,17 +239,17 @@ function Shop() {
               <>
                 <div
                   className={`py-10 grid ${grid === 4
-                      ? "grid-cols-4"
-                      : grid === 3
-                        ? "grid-cols-3"
-                        : grid === 2
-                          ? "grid-cols-2"
-                          : "grid-cols-1"
+                    ? "grid-cols-4"
+                    : grid === 3
+                      ? "grid-cols-3"
+                      : grid === 2
+                        ? "grid-cols-2"
+                        : "grid-cols-1"
                     } gap-4`}
                 >
-                  {filteredProduct.slice(0, visibleProducts).map((product) => (
+                  {filteredProduct.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((product) => (
                     <div key={product.id} className="flex justify-center">
-                    
+
                       <div className="w-full xl:p-4 p-2 border border-[#1E7773] bg-gradient-to-l from-[#403E4A] to-[#32303E] rounded-2xl group">
 
                         <Link href={product.is_customizeable ? `/customization/${product.slug}` : `/product/${product.slug}`}>
@@ -267,20 +264,20 @@ function Shop() {
                               alt={product.product_image[0]?.image_alt || "Product Image"}
                               onError={(e) => (e.currentTarget.src = Image_Not_Found)}
                             /> */}
-                        <img
-  className="w-full rounded-xl h-[200px] object-cover transition-all duration-300"
-  src={
-    hoveredProductId === product.id && product.product_image?.[1]
-      ? `${Assets_Url}${product.product_image[1]?.image}`
-      : product.product_image?.[0]
-        ? `${Assets_Url}${product.product_image[0]?.image}`
-        : `${Image_Url}defaultImage.svg`
-  }
-  alt={product.product_image?.[0]?.image_alt || "Product Image"}
-  onMouseEnter={() => setHoveredProductId(product.id)}
-  onMouseLeave={() => setHoveredProductId(null)}
-  onError={(e) => (e.currentTarget.src = Image_Not_Found)}
-/>
+                            <img
+                              className="w-full rounded-xl h-[200px] object-cover transition-all duration-300"
+                              src={
+                                hoveredProductId === product.id && product.product_image?.[1]
+                                  ? `${Assets_Url}${product.product_image[1]?.image}`
+                                  : product.product_image?.[0]
+                                    ? `${Assets_Url}${product.product_image[0]?.image}`
+                                    : `${Image_Url}defaultImage.svg`
+                              }
+                              alt={product.product_image?.[0]?.image_alt || "Product Image"}
+                              onMouseEnter={() => setHoveredProductId(product.id)}
+                              onMouseLeave={() => setHoveredProductId(null)}
+                              onError={(e) => (e.currentTarget.src = Image_Not_Found)}
+                            />
 
 
                           </div>
@@ -318,21 +315,70 @@ function Shop() {
                     </div>
                   ))}
 
-                  
+
                 </div>
 
-                {filteredProduct.length > 12 && visibleProducts < filteredProduct.length ? (
-                  <div className="flex justify-center">
-                    <button
-                      className="p-2 px-4 bg-[#1E7773] text-md cursor-pointer font-bazaar rounded-lg"
-                      onClick={handleLoadMore}
+                {filteredProduct.length > itemsPerPage && (
+                  <div className="flex justify-center items-center mt-10 gap-2 text-white">
+                    {/* <button 
+                      onClick={() => {
+                        setCurrentPage(prev => Math.max(1, prev - 1));
+                        window.scrollTo({ top: 450, behavior: "smooth" });
+                      }}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:text-white'}`}
                     >
-                      LOAD MORE
+                      &larr;
+                    </button> */}
+
+                    {(() => {
+                      const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+                      let pages = [];
+                      if (totalPages <= 7) {
+                        for (let i = 1; i <= totalPages; i++) { pages.push(i); }
+                      } else {
+                        if (currentPage <= 4) {
+                          pages = [1, 2, 3, 4, 5, '...', totalPages];
+                        } else if (currentPage > totalPages - 4) {
+                          pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+                        } else {
+                          pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+                        }
+                      }
+
+                      return pages.map((page, index) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            if (page !== '...') {
+                              setCurrentPage(page);
+                              window.scrollTo({ top: 450, behavior: "smooth" });
+                            }
+                          }}
+                          className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${page === '...'
+                            ? 'cursor-default text-gray-500'
+                            : currentPage === page
+                              ? 'bg-white text-[#2a2833] font-bold'
+                              : 'cursor-pointer hover:bg-white/10 text-gray-400'
+                            }`}
+                          disabled={page === '...'}
+                        >
+                          {page}
+                        </button>
+                      ));
+                    })()}
+
+                    <button
+                      onClick={() => {
+                        const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+                        setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                        window.scrollTo({ top: 450, behavior: "smooth" });
+                      }}
+                      disabled={currentPage === Math.ceil(filteredProduct.length / itemsPerPage)}
+                      className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === Math.ceil(filteredProduct.length / itemsPerPage) ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400'}`}
+                    >
+                      &rarr;
                     </button>
-                  </div>
-                ) : (
-                  <div className="flex justify-center">
-                    <p>No More Products</p>
                   </div>
                 )}
               </>

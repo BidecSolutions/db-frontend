@@ -413,7 +413,7 @@ function Header() {
                                     Shop All
                                 </Link>
                             </li>
-                            <li>
+                            <>
 
                                 {kraftCategory && (
                                     <li
@@ -461,7 +461,7 @@ function Header() {
 
 
                                 )}
-                            </li>
+                            </>
 
 
 
@@ -562,19 +562,19 @@ function Header() {
                     </div>
                 </div>
                 <ul className="lg:flex hidden flex flex-row items-center justify-center gap-2 text-sm  cursor-pointer">
-                    
-                        {user && (
-                            <Link href="/wishlist">
-                                <li className="relative">
-                                    <CiHeart className="text-black text-3xl" />
-                                    {wishlistCount > 0 && ( // Only show the count if it's greater than 0
-                                        <p className="absolute flex justify-center items-center -right-1 -top-1 bg-[#1E7773] rounded-full h-4 w-4 text-white text-[9px]">
-                                            {wishlistCount}
-                                        </p>
-                                    )}
-                                </li>
-                            </Link>
-                        )}
+
+                    {user && (
+                        <Link href="/wishlist">
+                            <li className="relative">
+                                <CiHeart className="text-black text-3xl" />
+                                {wishlistCount > 0 && ( // Only show the count if it's greater than 0
+                                    <p className="absolute flex justify-center items-center -right-1 -top-1 bg-[#1E7773] rounded-full h-4 w-4 text-white text-[9px]">
+                                        {wishlistCount}
+                                    </p>
+                                )}
+                            </li>
+                        </Link>
+                    )}
                     <li>
                         {!user ? (
                             <Link href="/register/" aria-label="User_profile" >
@@ -598,8 +598,8 @@ function Header() {
                             <RiShoppingBasket2Line className='bg-[#1E7773] rounded-lg text-white p-1 text-3xl' />
                             <p className='text-xs px-2'> <span className='text-[15px] font-semibold'>My Cart</span> <br /> 0 items-Rs0.00 </p>
                         </li> */}
-                        
-                            <li className="flex">
+
+                            <div className="flex">
                                 <RiShoppingBasket2Line className="bg-[#1E7773] rounded-lg text-white p-1 text-3xl" />
                                 <p className="text-xs px-2 text-zinc-950">
                                     <span className="text-[15px] font-semibold">
@@ -608,8 +608,8 @@ function Header() {
                                     <br />
                                     {totalItems} items - Rs {subtotal}
                                 </p>
-                            </li>
-                            
+                            </div>
+
                         </Link>
                     </li>
                 </ul>
@@ -634,9 +634,9 @@ function Header() {
                     <li>
                         {user && (
                             <Link href="/wishlist" onClick={() => setMobMenu(false)}>
-                                <li>
+                                <div>
                                     <CiHeart className="text-white text-3xl" />
-                                </li>
+                                </div>
                             </Link>
                         )}
                     </li>

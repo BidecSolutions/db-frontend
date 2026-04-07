@@ -102,12 +102,12 @@ const PriceRange = ({ onFilter, isCategoryShown }) => {
         <div className="py-4 w-full flex flex-col gap-2 text-white rounded-lg">
             <form>
                 <div>
-                    <h2 className='text-4xl'>Filter</h2>
-                    <h3 className="text-[#9F9F9F] text-xl font-bazaar mt-4">Price</h3>
+                    <p className='text-4xl'>Filter</p>
+                    <p className="text-[#9F9F9F] text-xl font-bazaar mt-4">Price</p>
 
                     <div className="flex justify-between py-3">
-                        <h2>{priceFrom}</h2>
-                        <h2>{priceTo}</h2>
+                        <p>{priceFrom}</p>
+                        <p>{priceTo}</p>
                     </div>
 
                     <div className="relative mb-3 h-6">
@@ -155,7 +155,7 @@ const PriceRange = ({ onFilter, isCategoryShown }) => {
 
                 <div>
                     <div className="flex flex-col gap-2">
-                        <h3 className="text-[#9F9F9F] text-xl font-bazaar ">Sort By</h3>
+                        <p className="text-[#9F9F9F] text-xl font-bazaar ">Sort By</p>
 
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={selected === 1} onChange={() => handleChange(1)} className="hidden" />

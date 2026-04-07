@@ -163,19 +163,19 @@ const CustomPriceRangeMob = ({ onFilter, isFilter, setIsFilter }) => {
             <div className="py-4 w-full flex flex-col gap2 text-white rounded-lg">
                 <form>
                     <div className="flex justify-between items-center">
-                        <h3 className='text-4xl'>Filter</h3>
+                        <p className='text-4xl'>Filter</p>
                         <button onClick={() => setIsFilter(false)} type="button">
                             <RxCross2 className='text-4xl rounded-full p-2 bg-white text-[#1E7773]' />
                         </button>
                     </div>
                     <div className="py-2">
-                    <h3 onClick={() => setPrice(!price)} className="flex flex-row justify-between items-center text-[#9F9F9F] text-xl font-bazaar mt-4"><p>Price</p><p>{price ? <PiCaretUpThin /> : <PiCaretDownThin />}</p></h3>
+                    <p onClick={() => setPrice(!price)} className="flex flex-row justify-between items-center text-[#9F9F9F] text-xl font-bazaar mt-4"><p>Price</p><p>{price ? <PiCaretUpThin /> : <PiCaretDownThin />}</p></p>
                     {price && (
                         <section>
                             {/* Price Slider */}
                             <div className="flex justify-between py-3">
-                                <h3>{priceFrom}</h3>
-                                <h3>{priceTo}</h3>
+                                <p>{priceFrom}</p>
+                                <p>{priceTo}</p>
                             </div>
 
                             <div className="relative mb-3 h-6">
@@ -238,7 +238,7 @@ const CustomPriceRangeMob = ({ onFilter, isFilter, setIsFilter }) => {
 
                     <div className=" py-2">
                         <div className="flex flex-col gap-2">
-                            <h3 onClick={() => setSort(!sort)} className="flex flex-row justify-between items-center text-xl text-[#9F9F9F] font-bazaar mt4"><p>Sort By</p><p>{sort ? <PiCaretUpThin /> : <PiCaretDownThin />}</p></h3>
+                            <p onClick={() => setSort(!sort)} className="flex flex-row justify-between items-center text-xl text-[#9F9F9F] font-bazaar mt4"><p>Sort By</p><p>{sort ? <PiCaretUpThin /> : <PiCaretDownThin />}</p></p>
                             {sort && (
 
 <section className="flex flex-col gap-2">
@@ -313,7 +313,7 @@ const CustomPriceRangeMob = ({ onFilter, isFilter, setIsFilter }) => {
                     </div>
                     <hr className='my-2 border border-[#9F9F9F]' />
                     <div className="py-2">
-                        <h3 onClick={() => setIsQuantity(!isQuantity)} className="flex flex-row justify-between items-center text-[#9F9F9F] text-xl font-bazaar mt4"><p>Quantity</p><p>{isQuantity ? <PiCaretUpThin /> : <PiCaretDownThin />}</p></h3>
+                        <p onClick={() => setIsQuantity(!isQuantity)} className="flex flex-row justify-between items-center text-[#9F9F9F] text-xl font-bazaar mt4"><p>Quantity</p><p>{isQuantity ? <PiCaretUpThin /> : <PiCaretDownThin />}</p></p>
                         {isQuantity && (
                         <section className="flex flex-col gap-2 py-3 ">
                             {quantity.map((quantitys, index) => (

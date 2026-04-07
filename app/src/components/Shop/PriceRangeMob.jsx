@@ -172,7 +172,7 @@ const PriceRangeMob = ({ isFilter, setIsFilter, onFilter, isCategoryShown }) => 
 
                     <div className="py-4">
                         <div className="flex flex-col gap-2">
-                            <h3 className="text-xl font-bazaar text-[#9F9F9F] mt4">Sort By</h3>
+                            <p className="text-xl font-bazaar text-[#9F9F9F] mt4">Sort By</p>
 
                             {/* A to Z Checkbox */}
                             <label className="flex items-center gap-2 cursor-pointer">

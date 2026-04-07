@@ -37,7 +37,8 @@ const CustomizationCategory = ({ params }) => {
   const [grid, setGrid] = useState(3);
   const [loading, setLoading] = useState(true);
   const [isCategoriesLoaded, setIsCategoriesLoaded] = useState(false);
-  const [visibleProducts, setVisibleProducts] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
   const [filteredProduct, setFilteredProduct] = useState([]);
   const [categoryDetail, setCategoryDetail] = useState([]);
   const [Category, setCategory] = useState([]);
@@ -98,8 +99,20 @@ const CustomizationCategory = ({ params }) => {
   const fetchData = async () => {
     if (!isCategoriesLoaded) return;
     setLoading(true);
+    setCurrentPage(1);
     try {
-      const cat = categories.find((c) => c.slug === category || (categoryIdFromURL && c.id == categoryIdFromURL));
+      const findCategory = (cats, currentSlug, currentId) => {
+        for (const c of cats) {
+          if (c.slug === currentSlug || (currentId && c.id == currentId)) return c;
+          if (c.subCategories && c.subCategories.length > 0) {
+            const found = findCategory(c.subCategories, currentSlug, currentId);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+
+      const cat = findCategory(categories, category, categoryIdFromURL);
 
       if (!cat) {
         setFilteredProduct([]);
@@ -149,10 +162,6 @@ const CustomizationCategory = ({ params }) => {
       sort_by: filters.selected || 1,
       slug: category,
     });
-  };
-
-  const handleLoadMore = () => {
-    setVisibleProducts((prev) => prev + 12);
   };
 
   // --------------------------------------------------
@@ -207,7 +216,7 @@ const CustomizationCategory = ({ params }) => {
         heading={Category?.name || "Discover Our Product Range"}
         heroImage={Category?.hero_banner_image || Category?.image || ""}
         path="Shop"
-        path2={Category?.name || "Category Name"}
+        path2={Category?.name}
       />
 
       <div className="lg:px-10 px-0 flex">
@@ -255,7 +264,7 @@ const CustomizationCategory = ({ params }) => {
                         : "grid-cols-1"
                     } gap-4`}
                 >
-                  {filteredProduct.slice(0, visibleProducts).map((product, index) => (
+                  {filteredProduct.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((product, index) => (
                     <div key={index} className="w-full">
                       <div className="p-2 bg-gradient-to-l from-[#403E4A] to-[#32303E] rounded-2xl border border-[#1E7773] group">
 
@@ -310,18 +319,56 @@ cursor-pointer rounded-lg"
                   ))}
                 </div>
 
-                {filteredProduct.length > visibleProducts ? (
-                  <div className="flex justify-center">
+                {filteredProduct.length > itemsPerPage && (
+                  <div className="flex justify-center items-center mt-10 gap-2 text-white">
+                    {(() => {
+                      const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+                      let pages = [];
+                      if (totalPages <= 7) {
+                        for (let i = 1; i <= totalPages; i++) { pages.push(i); }
+                      } else {
+                        if (currentPage <= 4) {
+                          pages = [1, 2, 3, 4, 5, '...', totalPages];
+                        } else if (currentPage > totalPages - 4) {
+                          pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+                        } else {
+                          pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+                        }
+                      }
+
+                      return pages.map((page, index) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            if (page !== '...') {
+                              setCurrentPage(page);
+                              window.scrollTo({ top: 400, behavior: "smooth" });
+                            }
+                          }}
+                          className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${page === '...'
+                            ? 'cursor-default text-gray-500'
+                            : currentPage === page
+                              ? 'bg-white text-[#2a2833] font-bold'
+                              : 'cursor-pointer hover:bg-white/10 text-gray-400'
+                            }`}
+                          disabled={page === '...'}
+                        >
+                          {page}
+                        </button>
+                      ));
+                    })()}
+
                     <button
-                      className="p-2 px-6 bg-[#1E7773] rounded-lg"
-                      onClick={handleLoadMore}
+                      onClick={() => {
+                        const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+                        setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                        window.scrollTo({ top: 400, behavior: "smooth" });
+                      }}
+                      disabled={currentPage === Math.ceil(filteredProduct.length / itemsPerPage)}
+                      className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === Math.ceil(filteredProduct.length / itemsPerPage) ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400'}`}
                     >
-                      LOAD MORE
+                      &rarr;
                     </button>
-                  </div>
-                ) : (
-                  <div className="flex justify-center">
-                    <div>No More Products</div>
                   </div>
                 )}
               </>
@@ -383,7 +430,7 @@ cursor-pointer rounded-lg"
 
           <div className="mt-25 w-full md:w-1/2">
             <h2 className="text-5xl text-white font-semibold font-poppins">
-              {Category?.name || "Category Name"}
+              {Category?.name || ""}
             </h2>
             {/* < body={blog?.body} /> */}
             <div

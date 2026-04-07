@@ -22,6 +22,7 @@ function CategoryDetail({ params }) {
     const unwrappedParams = use(params);
     const categorySlug = unwrappedParams?.['category-slug'] || '';
 
+
     const router = useRouter();
     const searchParams = useSearchParams();
     const searchTermFromURL = searchParams?.get("q") || "";
@@ -40,7 +41,8 @@ function CategoryDetail({ params }) {
     const [expanded, setExpanded] = useState(false);
     const [grid, setGrid] = useState(3);
     const [loading, setLoading] = useState(false);
-    const [visibleProducts, setVisibleProducts] = useState(12);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 12;
     const [filteredProduct, setFilteredProduct] = useState([]);
     const [categoryDetail, setCategoryDetail] = useState([]);
     const [Category, setCategory] = useState([]);
@@ -48,7 +50,7 @@ function CategoryDetail({ params }) {
     const [searchTerm, setSearchTerm] = useState(searchTermFromURL || "");
     const [filter, setFilter] = useState({
         price_from: 0,
-        price_to: 0,
+        price_to: 100000,
         sort_by: 1,
         slug: categorySlug,
     });
@@ -58,13 +60,12 @@ function CategoryDetail({ params }) {
     const [isCartModalOpen, setIsCartModalOpen] = useState(false);
     const [categories, setCategories] = useState([]);
 
-    console.log('categorySlug:', categorySlug);
-
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.public.get('product/category');
                 const categoryData = response.data.data;
+                console.log('Fetched categories:', categoryData);
                 setCategories(categoryData);
             } catch (error) {
                 console.log(error);
@@ -76,7 +77,6 @@ function CategoryDetail({ params }) {
 
     useEffect(() => {
         window.scrollTo(0, 450);
-        console.log('category slug:', categorySlug);
     }, [categorySlug]);
 
     const handleResize = () => {
@@ -94,20 +94,19 @@ function CategoryDetail({ params }) {
 
     const fetchData = async () => {
         setLoading(true);
+        setCurrentPage(1);
         try {
             const cat = categories.find(c => c.slug === categorySlug);
-            console.log("Matched Category:", cat);
             const response = await axios.public.get("search/product", {
                 params: {
                     price_from: filter.price_from,
-                    price_to: filter.price_to,
+                    price_to: filter.price_to > 0 ? filter.price_to : 100000,
                     sort_by: filter.sort_by,
-                    category_id: cat?.id || 0,
+                    category_id: (cat && cat.id != 0 && cat.id != "0") ? cat.id : undefined,
                     name: searchTerm,
                 },
             });
 
-            console.log("API Response:", response.data);
             setCategoryDetail(response.data?.data);
             setCategory(response.data?.category);
             setCategorySeo(response.data?.category?.category_seo_metadata);
@@ -165,10 +164,6 @@ function CategoryDetail({ params }) {
             sort_by: filters.selected || filter.sort_by,
             slug: categorySlug,
         });
-    };
-
-    const handleLoadMore = () => {
-        setVisibleProducts((prevVisibleProducts) => prevVisibleProducts + 12);
     };
 
     const handleAddCart = (product) => {
@@ -234,7 +229,6 @@ function CategoryDetail({ params }) {
         setIsCartModalOpen(true);
     };
 
-    console.log('selectedProduct Category:', Category);
 
     return (
         <>
@@ -255,7 +249,7 @@ function CategoryDetail({ params }) {
                     }
                     heroImage={Category?.hero_banner_image || Category?.image || ""}
                     path="Shop"
-                    path2={Category ? `${Category?.name}` : "Category Name"}
+                    path2={Category ? `${Category?.name}` : ""}
 
                 />
                 <div className=" lg:px-10 px-0 flex">
@@ -324,7 +318,7 @@ function CategoryDetail({ params }) {
                                         className={`py-10 grid ${grid === 4 ? "grid-cols-4" : grid === 3 ? "grid-cols-3" : grid === 2 ? "grid-cols-2" : "grid-cols-1"} gap-4 justify-center w-full`}
                                     >
                                         {filteredProduct
-                                            .slice(0, visibleProducts)
+                                            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                                             .map((product, index) => (
                                                 <div
                                                     key={index}
@@ -439,19 +433,57 @@ cursor-pointer rounded-lg`}
                                             ))}
                                     </div>
 
-                                    {filteredProduct.length > 12 &&
-                                        visibleProducts < filteredProduct.length ? (
-                                        <div className="flex justify-center">
-                                            <button
-                                                className="p-2 px-4 bg-[#1E7773] w-fit lg:text-md pt-3 text-md font-bazaar rounded-lg"
-                                                onClick={handleLoadMore}
+                                    {filteredProduct.length > itemsPerPage && (
+                                        <div className="flex justify-center items-center mt-10 gap-2 text-white">
+                                            {(() => {
+                                                const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+                                                let pages = [];
+                                                if (totalPages <= 7) {
+                                                    for (let i = 1; i <= totalPages; i++) { pages.push(i); }
+                                                } else {
+                                                    if (currentPage <= 4) {
+                                                        pages = [1, 2, 3, 4, 5, '...', totalPages];
+                                                    } else if (currentPage > totalPages - 4) {
+                                                        pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+                                                    } else {
+                                                        pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+                                                    }
+                                                }
+                                                
+                                                return pages.map((page, index) => (
+                                                    <button
+                                                        key={index}
+                                                        onClick={() => {
+                                                            if (page !== '...') {
+                                                                setCurrentPage(page);
+                                                                window.scrollTo({ top: 450, behavior: "smooth" });
+                                                            }
+                                                        }}
+                                                        className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${
+                                                            page === '...' 
+                                                                ? 'cursor-default text-gray-500' 
+                                                                : currentPage === page 
+                                                                    ? 'bg-white text-[#2a2833] font-bold' 
+                                                                    : 'cursor-pointer hover:bg-white/10 text-gray-400'
+                                                        }`}
+                                                        disabled={page === '...'}
+                                                    >
+                                                        {page}
+                                                    </button>
+                                                ));
+                                            })()}
+
+                                            <button 
+                                                onClick={() => {
+                                                    const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+                                                    setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                                                    window.scrollTo({ top: 450, behavior: "smooth" });
+                                                }}
+                                                disabled={currentPage === Math.ceil(filteredProduct.length / itemsPerPage)}
+                                                className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === Math.ceil(filteredProduct.length / itemsPerPage) ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400 text-gray-400'}`}
                                             >
-                                                LOAD MORE
+                                                &rarr;
                                             </button>
-                                        </div>
-                                    ) : (
-                                        <div className="flex justify-center text-[15px]">
-                                            <div>No More Products</div>
                                         </div>
                                     )}
                                 </>
@@ -512,7 +544,7 @@ cursor-pointer rounded-lg`}
 
                         <div className="mt-25 w-full md:w-1/2">
                             <h2 className="text-5xl text-white font-semibold font-poppins">
-                                {Category?.name || "Category Name"}
+                                {Category?.name || ""}
                             </h2>
                             {/* < body={blog?.body} /> */}
                             <div

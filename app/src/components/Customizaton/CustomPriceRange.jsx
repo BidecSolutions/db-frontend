@@ -144,20 +144,20 @@ const CustomPriceRange = ({ onFilter }) => {
       <form>
         {/* PRICE */}
         <div className="py-2">
-          <h3 className="text-4xl">Filter</h3>
-          <h3
+          <p className="text-4xl">Filter</p> 
+          <p
             onClick={() => setPrice(!price)}
             className="flex justify-between items-center text-[#9F9F9F] text-xl font-bazaar mt-4"
           >
             <p>Price</p>
             <p>{price ? <PiCaretUpThin /> : <PiCaretDownThin />}</p>
-          </h3>
+          </p>
 
           {price && (
             <section>
               <div className="flex justify-between py-3">
-                <h3>{priceFrom}</h3>
-                <h3>{priceTo}</h3>
+                <p>{priceFrom}</p>
+                <p>{priceTo}</p>
               </div>
 
               <div className="relative mb-3 h-6">
@@ -208,13 +208,13 @@ const CustomPriceRange = ({ onFilter }) => {
 
         {/* SORT */}
         <div className="py-2">
-          <h3
+          <p
             onClick={() => setSort(!sort)}
             className="flex justify-between items-center text-[#9F9F9F] text-xl"
           >
             Sort By
             {sort ? <PiCaretUpThin /> : <PiCaretDownThin />}
-          </h3>
+          </p>
 
           {sort && (
             <section className="flex flex-col gap-2">

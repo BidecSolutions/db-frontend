@@ -364,9 +364,9 @@ export default function CustomDetails() {
                     className="inline cursor-pointer  "
                 >
                     {/* <Link to={`/product-category/${productDetail?.product?.category?.slug}`}> */}
-                    {productDetail.product?.category?.name || "Category Name"}
+                    {productDetail.product?.category?.name || ""}
                     {/* </Link> */}
-                </span> / {productDetail.product?.subCategory?.name ? <> <Link to='/'> {productDetail.product?.subCategory.name || 'Category Name'} </Link> /</> : ""} {productDetail.product?.name || 'Product Name'}</p>
+                </span> / {productDetail.product?.subCategory?.name ? <> <Link to='/'> {productDetail.product?.subCategory.name || ''} </Link> /</> : ""} {productDetail.product?.name || 'Product Name'}</p>
                 {/* <h3 className="py-10 font-bazaar md:text-6xl text-5xl">INQUIRY FORM</h3> */}
             </div>
             <main className=''>

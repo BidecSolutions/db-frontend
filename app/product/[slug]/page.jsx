@@ -514,11 +514,11 @@ const [selectedSize, setSelectedSize] = useState(null);
                         onClick={() => handleCategoryLink(productDetail?.product?.category)}
                         className="inline cursor-pointer"
                     >
-                        {productDetail?.product?.category?.name || "Category Name"}
+                        {productDetail?.product?.category?.name || ""}
                     </span>
 
                     {productDetail?.product?.subCategory?.name && (
-                        <> / <Link href="/shop/">{productDetail.product?.subCategory.name || 'Category Name'}</Link></>
+                        <> / <Link href="/shop/">{productDetail.product?.subCategory.name || ''}</Link></>
                     )}{" "}
                     / {productDetail?.product?.name || "Product Name"}
 
