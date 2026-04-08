@@ -1,3 +1,4 @@
+
 // 🟩 Dynamic Metadata Function for Shop Page
 export async function generateMetadata() {
   const res = await fetch(

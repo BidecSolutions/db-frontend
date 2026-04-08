@@ -91,32 +91,91 @@ function CategoryDetail({ params }) {
             setGrid(3);
         }
     };
+const normalizeSlug = (slug) => slug?.replace(/\/$/, "");
 
-    const fetchData = async () => {
-        setLoading(true);
-        setCurrentPage(1);
-        try {
-            const cat = categories.find(c => c.slug === categorySlug);
-            const response = await axios.public.get("search/product", {
-                params: {
-                    price_from: filter.price_from,
-                    price_to: filter.price_to > 0 ? filter.price_to : 100000,
-                    sort_by: filter.sort_by,
-                    category_id: (cat && cat.id != 0 && cat.id != "0") ? cat.id : undefined,
-                    name: searchTerm,
-                },
-            });
+  const findCategoryBySlug = (categories, slug) => {
+    const normalize = (s) => s?.toLowerCase().replace(/\/$/, "");
+    const normSlug = normalize(slug);
 
-            setCategoryDetail(response.data?.data);
-            setCategory(response.data?.category);
-            setCategorySeo(response.data?.category?.category_seo_metadata);
-            setFilteredProduct(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching products:", error);
-        } finally {
-            setLoading(false);
-        }
+    for (const cat of categories) {
+      const catNormSlug = normalize(cat.slug);
+      if (catNormSlug && catNormSlug === normSlug) return cat;
+
+      if (cat.subCategories?.length) {
+        const found = findCategoryBySlug(cat.subCategories, slug);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+console.log("User Slug:", normalizeSlug(categorySlug));
+console.log("Category Slugs:", categories.map(c => normalizeSlug(c.slug)));
+
+  const fetchData = async () => {
+  console.log("🚀 fetchData CALLED");
+
+  if (!categories.length) {
+    console.log("⏳ Categories not loaded yet");
+    return;
+  }
+
+  setLoading(true);
+  setCurrentPage(1);
+
+  try {
+    console.log("🔹 Slug:", categorySlug);
+    console.log("🔹 Search Term:", searchTerm);
+    console.log("🔹 Filter:", filter);
+    console.log("🔹 Total Categories:", categories);
+
+    // 🔍 Find category (recursive)
+    const cat = findCategoryBySlug(categories, categorySlug);
+
+    console.log("✅ Matched Category:", cat);
+
+    if (!cat) {
+      console.log("❌ Category NOT FOUND for slug:", categorySlug);
+      setFilteredProduct([]);
+      return;
+    }
+
+    // 📦 API Params
+    const params = {
+      price_from: filter.price_from,
+      price_to: filter.price_to > 0 ? filter.price_to : 100000,
+      sort_by: filter.sort_by,
+      category_id: cat.id,
+      name: searchTerm,
     };
+
+    console.log("📡 API Params:", params);
+
+    // 🌐 API Call
+    const response = await axios.public.get("search/product", { params });
+
+    console.log("📥 FULL API Response:", response);
+    console.log("📥 API Data:", response.data);
+    console.log("📥 Products:", response.data?.data);
+    console.log("📥 Category Info:", response.data?.category);
+
+    // 🧠 State updates
+    setCategoryDetail(response.data?.data);
+    setCategory(response.data?.category);
+    setCategorySeo(response.data?.category?.category_seo_metadata);
+    setFilteredProduct(response.data?.data || []);
+
+    console.log("✅ State Updated Successfully");
+
+  } catch (error) {
+    console.error("❌ API ERROR:", error);
+    console.error("❌ Error Response:", error?.response);
+    console.error("❌ Error Data:", error?.response?.data);
+  } finally {
+    setLoading(false);
+    console.log("🏁 fetchData FINISHED");
+  }
+};
 
     // Update searchTerm when URL changes
     useEffect(() => {
@@ -132,21 +191,16 @@ function CategoryDetail({ params }) {
     }, [categorySlug]);
 
     // Fetch data when filter/search changes
-    useEffect(() => {
-        if (
-            searchTerm ||
-            filter.price_from > 0 ||
-            filter.price_to > 0 ||
-            categorySlug
-        ) {
-            const delayDebounceFn = setTimeout(() => {
-                fetchData();
-            }, 300);
+ useEffect(() => {
+    if (!categories.length) return;
 
-            return () => clearTimeout(delayDebounceFn);
-        }
-    }, [filter, searchTerm, categorySlug]);
+    const delayDebounceFn = setTimeout(() => {
+        fetchData();
+    }, 300);
 
+    return () => clearTimeout(delayDebounceFn);
+
+}, [filter, searchTerm, categorySlug, categories]); // ✅ ADD THIS
     // Set grid on resize
     useEffect(() => {
         handleResize();

@@ -97,8 +97,9 @@ function Header() {
     };
 
     const handleCategoryLink = (item) => {
+        if (!item) return;
         setCategory(item);
-        router.push(`/product-category/${item.slug}?id=${item.id}`);
+        router.push(`/product-category/${item.slug}/`);
     };
 
     const toggleSubcategories = (categoryId) => {
@@ -119,9 +120,9 @@ function Header() {
             router.push(`/shop/?q=${encodeURIComponent(searchTerm)}`);
         } else {
             router.push(
-                `/product-category/${category.slug}?q=${encodeURIComponent(
+                `/product-category/${category.slug}/?q=${encodeURIComponent(
                     searchTerm
-                )}&id=${category.id}`
+                )}`
             );
         }
     };

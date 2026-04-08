@@ -96,50 +96,67 @@ const CustomizationCategory = ({ params }) => {
   }, []);
 
   // Fetch data API
-  const fetchData = async () => {
-    if (!isCategoriesLoaded) return;
-    setLoading(true);
-    setCurrentPage(1);
-    try {
-      const findCategory = (cats, currentSlug, currentId) => {
-        for (const c of cats) {
-          if (c.slug === currentSlug || (currentId && c.id == currentId)) return c;
-          if (c.subCategories && c.subCategories.length > 0) {
-            const found = findCategory(c.subCategories, currentSlug, currentId);
-            if (found) return found;
-          }
+    const fetchData = async () => {
+        if (!isCategoriesLoaded) return;
+        setLoading(true);
+        setCurrentPage(1);
+        try {
+            const normalize = (s) => {
+                if (!s) return "";
+                // Decode and strip trailing slash
+                return decodeURIComponent(s).toLowerCase().replace(/\/+$/, "");
+            };
+
+            const findCategory = (cats, currentSlug, currentId) => {
+                const normSlug = normalize(currentSlug);
+                console.log("🔍 Looking for slug:", normSlug, "in", cats.length, "categories");
+
+                for (const c of cats) {
+                    const catNormSlug = normalize(c.slug);
+                    
+                    if ((catNormSlug && catNormSlug === normSlug) || (currentId && c.id == currentId)) {
+                        console.log("✅ Match found:", c.name, "(ID:", c.id, ")");
+                        return c;
+                    }
+
+                    if (c.subCategories && c.subCategories.length > 0) {
+                        const found = findCategory(c.subCategories, currentSlug, currentId);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            };
+
+            const cat = findCategory(categories, category, categoryIdFromURL);
+
+            if (!cat) {
+                console.log("❌ Category not found for slug:", category);
+                setFilteredProduct([]);
+                setLoading(false);
+                return;
+            }
+
+            console.log("📡 Fetching products for category ID:", cat.id);
+            const response = await axios.public.get("search/product", {
+                params: {
+                    price_from: filter.price_from,
+                    price_to: filter.price_to,
+                    sort_by: filter.sort_by,
+                    category_id: cat.id,
+                    name: searchTerm,
+                },
+            });
+
+            setCategoryDetail(response.data?.data);
+            setCategory(response.data?.category);
+            setCategorySeo(response.data?.category?.category_seo_metadata);
+            setFilteredProduct(response.data?.data || []);
+        } catch (err) {
+            console.error("❌ API Error:", err);
+        } finally {
+            setLoading(false);
         }
-        return null;
-      };
-
-      const cat = findCategory(categories, category, categoryIdFromURL);
-
-      if (!cat) {
-        setFilteredProduct([]);
-        setLoading(false);
-        return;
-      }
-
-      const response = await axios.public.get("search/product", {
-        params: {
-          price_from: filter.price_from,
-          price_to: filter.price_to,
-          sort_by: filter.sort_by,
-          category_id: cat.id,
-          name: searchTerm,
-        },
-      });
-
-      setCategoryDetail(response.data?.data);
-      setCategory(response.data?.category);
-      setCategorySeo(response.data?.category?.category_seo_metadata);
-      setFilteredProduct(response.data?.data || []);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
   useEffect(() => {
     setSearchTerm(searchTermFromURL || "");
