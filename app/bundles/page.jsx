@@ -1,30 +1,46 @@
 // 🟩 Dynamic Metadata Function for BundleShop Page
 export async function generateMetadata() {
-  const res = await fetch(
-    "https://ecommerce-inventory.thegallerygen.com/api/page/detail/3", // API page ID for BundleShop
-    { cache: "no-store" }
-  );
+  try {
+    const res = await fetch(
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/3", // API page ID for BundleShop
+      { cache: "no-store" }
+    );
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`API returned status ${res.status}`);
+    }
 
-  return {
-    title: data?.data?.meta_title || "Bundle Shop",
-    description: data?.data?.meta_description || "Bundle Shop products page",
+    const data = await res.json();
 
-    alternates: {
-      canonical: data?.data?.canonical_url || "",
-    },
+    return {
+      title: data?.data?.meta_title || "Bundle Shop - Disposable Bazar",
+      description: data?.data?.meta_description || "Special bundles and deals on disposable products.",
 
-    robots: {
-      index: data?.data?.robots_index !== "noindex",
-      follow: data?.data?.robots_follow !== "nofollow",
+      alternates: {
+        canonical: data?.data?.canonical_url || "",
+      },
 
-      googleBot: {
+      robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
+
+        googleBot: {
+          index: data?.data?.robots_index !== "noindex",
+          follow: data?.data?.robots_follow !== "nofollow",
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    console.error("BundleShop metadata fetch failed:", error);
+    return {
+      title: "Bundle Shop - Disposable Bazar",
+      description: "Our special bundles and deals.",
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  }
 }
 
 

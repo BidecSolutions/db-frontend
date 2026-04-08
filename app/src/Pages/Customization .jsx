@@ -32,7 +32,8 @@ const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
   const [isFilter, setIsFilter] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [visibleProducts, setVisibleProducts] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
   const [filteredProduct, setFilteredProduct] = useState([]);
   const [searchTerm, setSearchTerm] = useState(searchTermFromURL || "");
 
@@ -71,6 +72,7 @@ const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   // --------------------------
   const fetchData = async () => {
     setLoading(true);
+    setCurrentPage(1);
     try {
       const params = new URLSearchParams();
 
@@ -149,7 +151,7 @@ const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
 
     const handleLoadMore = () => {
-        setVisibleProducts((prevVisibleProducts) => prevVisibleProducts + 12);
+        // setCurrentPage((prev) => prev + 1); // Not used anymore but left for safety if needed temporarily
     };
 
     const handleAddCart = (product) => {
@@ -186,7 +188,7 @@ const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   return (
    <div >
             <CustomSeo id={3} />
-            <CustomHeroSection heading='Build Your Perfect Match' path='Customization ' custom="customization" bgImage="HomeAssets/HeroSecton/Banner3.png" />
+            <CustomHeroSection heading='Build Your Perfect Match' path='Customization ' custom="customization" bgImage="HomeAssets/HeroSecton/Banner3.png" hideContent={true} />
             <div className="md:py-20 py-10 lg:px-10 px-0 flex">
                 <section className="hidden lg:flex flex flex-col p-5 text-white hscreen lg:w-1/5">
                     <CustomPriceRange onFilter={handleFilter} />
@@ -195,51 +197,57 @@ const [isCartModalOpen, setIsCartModalOpen] = useState(false);
                     <CustomPriceRangeMob onFilter={handleFilter} isFilter={isFilter} setIsFilter={setIsFilter} />
                 </div>
         <section className="flex p-5 hscreen lg:w-4/5 w-full">
-          <div className="py-4 w-full flex flex-col gap2 text-white rounded-lg">
-            <div className="flex justify-between">
-              <h4 className="text-4xl font-bazaar">Shop All</h4>
+            <div className="py-4 w-full flex flex-col gap2 text-white rounded-lg">
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between">
+                  <h4 className="text-4xl font-bazaar">Shop All</h4>
 
-              <div>
-                <button onClick={() => setIsFilter(true)}>
-                  <RiFilter3Line className="lg:hidden block text-4xl rounded-full p-2 bg-[#1E7773]" />
-                </button>
+                  <div>
+                    <button onClick={() => setIsFilter(true)}>
+                      <RiFilter3Line className="lg:hidden block text-4xl rounded-full p-2 bg-[#1E7773]" />
+                    </button>
 
-                {/* Grid Buttons */}
-                <div className="hidden lg:flex justify-between gap-3 items-center">
-                  <h4 className="text-md font-bazaar">View</h4>
+                    {/* Grid Buttons */}
+                    <div className="hidden lg:flex justify-between gap-3 items-center">
+                      <h4 className="text-md font-bazaar">View</h4>
 
-                  <img
-                    onClick={() => setGrid(4)}
-                    className="cursor-pointer"
-                    src={`${Image_Url}${
-                      grid === 4
-                        ? "ShopAssets/4greenGridImg.svg"
-                        : "ShopAssets/4gridImg.svg"
-                    }`}
-                  />
+                      <img
+                        onClick={() => setGrid(4)}
+                        className="cursor-pointer"
+                        src={`${Image_Url}${
+                          grid === 4
+                            ? "ShopAssets/4greenGridImg.svg"
+                            : "ShopAssets/4gridImg.svg"
+                        }`}
+                      />
 
-                  <img
-                    onClick={() => setGrid(3)}
-                    className="cursor-pointer"
-                    src={`${Image_Url}${
-                      grid === 3
-                        ? "ShopAssets/3greenGridImg.svg"
-                        : "ShopAssets/3gridImg.svg"
-                    }`}
-                  />
+                      <img
+                        onClick={() => setGrid(3)}
+                        className="cursor-pointer"
+                        src={`${Image_Url}${
+                          grid === 3
+                            ? "ShopAssets/3greenGridImg.svg"
+                            : "ShopAssets/3gridImg.svg"
+                        }`}
+                      />
 
-                  <img
-                    onClick={() => setGrid(2)}
-                    className="cursor-pointer"
-                    src={`${Image_Url}${
-                      grid === 2
-                        ? "ShopAssets/2greenGridImg.svg"
-                        : "ShopAssets/2gridImg.svg"
-                    }`}
-                  />
+                      <img
+                        onClick={() => setGrid(2)}
+                        className="cursor-pointer"
+                        src={`${Image_Url}${
+                          grid === 2
+                            ? "ShopAssets/2greenGridImg.svg"
+                            : "ShopAssets/2gridImg.svg"
+                        }`}
+                      />
+                    </div>
+                  </div>
                 </div>
+                {/* Breadcrumbs */}
+                <p className="text-sm text-gray-400">
+                  <Link href="/">Home</Link> / <Link href="/shop">Shop</Link> / Customization
+                </p>
               </div>
-            </div>
 
             {/* Loader */}
             {loading ? (
@@ -265,7 +273,7 @@ const [isCartModalOpen, setIsCartModalOpen] = useState(false);
                   } gap-4 justify-center w-full`}
                 >
                   {filteredProduct
-                    ?.slice(0, visibleProducts)
+                   ?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                     .map((product, index) => (
                       <Link key={index} href={`/customization/${product.slug}`}>
                         <div
@@ -345,23 +353,60 @@ const [isCartModalOpen, setIsCartModalOpen] = useState(false);
                     ))}
                 </div>
 
-                {/* Load More */}
-                {filteredProduct?.length > 12 &&
-                visibleProducts < filteredProduct.length ? (
-                  <div className="flex justify-center">
-                    <button
-                      className="p-2 px-4 bg-[#1E7773] w-fit text-md font-bazaar rounded-lg"
-                      onClick={handleLoadMore}
-                    >
-                      LOAD MORE
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex justify-center">
-                    <p>No More Products</p>
-                  
-                  </div>
-                )}
+                {/* Pagination */}
+                  {filteredProduct.length > itemsPerPage && (
+                    <div className="flex justify-center items-center mt-10 gap-2 text-white">
+                      
+                      {(() => {
+                        const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+                        let pages = [];
+                        if (totalPages <= 7) {
+                          for (let i = 1; i <= totalPages; i++) { pages.push(i); }
+                        } else {
+                          if (currentPage <= 4) {
+                            pages = [1, 2, 3, 4, 5, '...', totalPages];
+                          } else if (currentPage > totalPages - 4) {
+                            pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+                          } else {
+                            pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+                          }
+                        }
+
+                        return pages.map((page, index) => (
+                          <button
+                            key={index}
+                            onClick={() => {
+                              if (page !== '...') {
+                                setCurrentPage(page);
+                                window.scrollTo({ top: 450, behavior: "smooth" });
+                              }
+                            }}
+                            className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${page === '...'
+                              ? 'cursor-default text-gray-500'
+                              : currentPage === page
+                                ? 'bg-white text-[#2a2833] font-bold'
+                                : 'cursor-pointer hover:bg-white/10 text-gray-400'
+                              }`}
+                            disabled={page === '...'}
+                          >
+                            {page}
+                          </button>
+                        ));
+                      })()}
+
+                      <button
+                        onClick={() => {
+                          const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+                          setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                          window.scrollTo({ top: 450, behavior: "smooth" });
+                        }}
+                        disabled={currentPage === Math.ceil(filteredProduct.length / itemsPerPage)}
+                        className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === Math.ceil(filteredProduct.length / itemsPerPage) ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400'}`}
+                      >
+                        &rarr;
+                      </button>
+                    </div>
+                  )}
               </>
             )}
           </div>

@@ -196,6 +196,7 @@ function Shop() {
         heading="Shop All"
         path="Shop "
         bgImage="CustomHeroAssets/shopbanner.png"
+        hideContent={true}
       />
 
       <div className="lg:px-10 px-0 flex ">
@@ -214,16 +215,22 @@ function Shop() {
 
         <section className="flex p-5 lg:w-4/5 w-full">
           <div className="py-4 w-full flex flex-col text-white rounded-lg">
-            <div className="flex justify-between">
-              <h3 className="text-4xl font-bazaar">
-                {filter.category_Id
-                  ? filteredProduct[0]?.category?.name
-                  : "Shop All"}
-              </h3>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between">
+                <h3 className="text-4xl font-bazaar">
+                  {filter.category_Id
+                    ? filteredProduct[0]?.category?.name
+                    : "Shop All"}
+                </h3>
 
-              <button onClick={() => setIsFilter(true)}>
-                <RiFilter3Line className="lg:hidden block text-4xl rounded-full p-2 bg-[#1E7773]" />
-              </button>
+                <button onClick={() => setIsFilter(true)}>
+                  <RiFilter3Line className="lg:hidden block text-4xl rounded-full p-2 bg-[#1E7773]" />
+                </button>
+              </div>
+              {/* Breadcrumbs */}
+              <p className="text-sm text-gray-400">
+                <Link href="/">Home</Link> / <Link href="/shop">Shop</Link>
+              </p>
             </div>
 
             {/* LOADING /  PRODUCTS LIST UI SAME */}

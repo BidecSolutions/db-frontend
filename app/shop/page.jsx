@@ -1,32 +1,49 @@
 
 // 🟩 Dynamic Metadata Function for Shop Page
 export async function generateMetadata() {
-  const res = await fetch(
-    "https://ecommerce-inventory.thegallerygen.com/api/page/detail/1", 
-    { cache: "no-store" }
-  );
+  try {
+    const res = await fetch(
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/1",
+      { cache: "no-store" }
+    );
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status}`);
+    }
 
-  return {
-    title: data?.data?.meta_title || "Shop - Default Title",
-    description: data?.data?.meta_description || "Shop page description",
+    const data = await res.json();
 
-    alternates: {
-      canonical: data?.data?.canonical_url || "",
-    },
+    return {
+      title: data?.data?.meta_title || "Shop - Disposable Bazar",
+      description: data?.data?.meta_description || "Browse our full collection of disposable products.",
 
-    // 🟦 Robots Tag Added
-    robots: {
-      index: data?.data?.robots_index !== "noindex",
-      follow: data?.data?.robots_follow !== "nofollow",
+      alternates: {
+        canonical: data?.data?.canonical_url || "",
+      },
 
-      googleBot: {
+      robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
+
+        googleBot: {
+          index: data?.data?.robots_index !== "noindex",
+          follow: data?.data?.robots_follow !== "nofollow",
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    console.error("Shop metadata fetch failed:", error);
+    
+    // Fallback metadata if API is down
+    return {
+      title: "Shop - Disposable Bazar",
+      description: "Browse our wide range of disposable products.",
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  }
 }
 
 // 🟩 Load Shop Component

@@ -12,7 +12,8 @@ function CustomHeroSection({
     title,
     bgImage,
     heroImage,
-    custom
+    custom,
+    hideContent
 }) {
     useEffect(() => {
         Aos.init({ duration: "2000", delay: "0" });
@@ -56,25 +57,27 @@ function CustomHeroSection({
         // }}
         >
             {/* Left text content */}
-            <div className="md:w-[40%] md:pl-20 pl-10">
-                <h1 className="md:text-6xl text-5xl font-bazaar text-white">
-                    {heading}
-                </h1>
-                <p className="md:text-5xl text-4xl font-bazaar text-white">
-                    {title}
-                </p>
+            {hideContent ? null : (
+                <div className="md:w-[40%] md:pl-20 pl-10">
+                    <h1 className="md:text-6xl text-5xl font-bazaar text-white">
+                        {heading}
+                    </h1>
+                    <p className="md:text-5xl text-4xl font-bazaar text-white">
+                        {title}
+                    </p>
 
-                {path2 ? (
-                    <p className="text-lg text-white">
-                        <Link aria-label="Home" href={"/"}>Home</Link> /{" "}
-                        <Link aria-label={path} href={"/shop"}>{path}</Link> / {path2}
-                    </p>
-                ) : (
-                    <p className="text-lg text-white">
-                        <Link aria-label="Home" href={"/"}>Home</Link> / {path}
-                    </p>
-                )}
-            </div>
+                    {path2 ? (
+                        <p className="text-lg text-white">
+                            <Link aria-label="Home" href={"/"}>Home</Link> /{" "}
+                            <Link aria-label={path} href={"/shop"}>{path}</Link> / {path2}
+                        </p>
+                    ) : (
+                        <p className="text-lg text-white">
+                            <Link aria-label="Home" href={"/"}>Home</Link> / {path}
+                        </p>
+                    )}
+                </div>
+            )}
 
             {/* Decorative images */}
             {/* <img data-aos='fade-right' src={`${Image_Url}CustomHeroAssets/Cup.svg`} className='absolute -bottom-10 left-0 w-18' alt="" />

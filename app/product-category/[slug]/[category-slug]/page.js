@@ -304,6 +304,7 @@ console.log("Category Slugs:", categories.map(c => normalizeSlug(c.slug)));
                     heroImage={Category?.hero_banner_image || Category?.image || ""}
                     path="Shop"
                     path2={Category ? `${Category?.name}` : ""}
+                    hideContent={true}
 
                 />
                 <div className=" lg:px-10 px-0 flex">
@@ -323,38 +324,44 @@ console.log("Category Slugs:", categories.map(c => normalizeSlug(c.slug)));
                     </div>
                     <section className={`{flex p-5 hscreen lg:w-4/5 w-full `}>
                         <div className="py-4 w-full flex flex-col gap2 text-white rounded-lg">
-                            <div className="flex justify-between">
-                                <h2 className="text-4xl font-bazaar">
-                                    {Category ? `${Category?.name}` : "Shop All"}
-                                </h2>
-                                <div className="">
-                                    <button onClick={() => setIsFilter(true)}>
-                                        <RiFilter3Line className="lg:hidden block text-4xl rounded-full p-2 bg-[#1E7773]" />
-                                    </button>
-                                    <div className="hidden lg:flex justify-between gap-3 items-center">
-                                        <h2 className="text-lg font-bazaar">
-                                            View
-                                        </h2>
-                                        <img
-                                            onClick={() => setGrid(4)}
-                                            className="cursor-pointer w-8"
-                                            src={`${Image_Url}${grid === 4 ? "ShopAssets/4greenGridImg.svg" : "ShopAssets/4gridImg.svg"}`}
-                                            alt=""
-                                        />
-                                        <img
-                                            onClick={() => setGrid(3)}
-                                            className="cursor-pointer w-6"
-                                            src={`${Image_Url}${grid === 3 ? "ShopAssets/3greenGridImg.svg" : "ShopAssets/3gridImg.svg"}`}
-                                            alt=""
-                                        />
-                                        <img
-                                            onClick={() => setGrid(2)}
-                                            className="cursor-pointer w-4"
-                                            src={`${Image_Url}${grid === 2 ? "ShopAssets/2greenGridImg.svg" : "ShopAssets/2gridImg.svg"}`}
-                                            alt=""
-                                        />
+                            <div className="flex flex-col gap-2">
+                                <div className="flex justify-between">
+                                    <h2 className="text-4xl font-bazaar">
+                                        {Category ? `${Category?.name}` : "Shop All"}
+                                    </h2>
+                                    <div className="">
+                                        <button onClick={() => setIsFilter(true)}>
+                                            <RiFilter3Line className="lg:hidden block text-4xl rounded-full p-2 bg-[#1E7773]" />
+                                        </button>
+                                        <div className="hidden lg:flex justify-between gap-3 items-center">
+                                            <h2 className="text-lg font-bazaar">
+                                                View
+                                            </h2>
+                                            <img
+                                                onClick={() => setGrid(4)}
+                                                className="cursor-pointer w-8"
+                                                src={`${Image_Url}${grid === 4 ? "ShopAssets/4greenGridImg.svg" : "ShopAssets/4gridImg.svg"}`}
+                                                alt=""
+                                            />
+                                            <img
+                                                onClick={() => setGrid(3)}
+                                                className="cursor-pointer w-6"
+                                                src={`${Image_Url}${grid === 3 ? "ShopAssets/3greenGridImg.svg" : "ShopAssets/3gridImg.svg"}`}
+                                                alt=""
+                                            />
+                                            <img
+                                                onClick={() => setGrid(2)}
+                                                className="cursor-pointer w-4"
+                                                src={`${Image_Url}${grid === 2 ? "ShopAssets/2greenGridImg.svg" : "ShopAssets/2gridImg.svg"}`}
+                                                alt=""
+                                            />
+                                        </div>
                                     </div>
                                 </div>
+                                {/* Breadcrumbs */}
+                                <p className="text-sm text-gray-400">
+                                    <Link href="/">Home</Link> / <Link href="/shop">Shop</Link> / {Category?.name}
+                                </p>
                             </div>
                             {/* Show loader while loading */}
                             {loading ? (

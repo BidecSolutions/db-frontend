@@ -1,30 +1,46 @@
 // 🟩 Dynamic Metadata Function for Customization Page
 export async function generateMetadata() {
-  const res = await fetch(
-    "https://ecommerce-inventory.thegallerygen.com/api/page/detail/3", 
-    { cache: "no-store" }
-  );
+  try {
+    const res = await fetch(
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/3",
+      { cache: "no-store" }
+    );
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`API returned status ${res.status}`);
+    }
 
-  return {
-    title: data?.data?.meta_title || "Customization Page",
-    description: data?.data?.meta_description || "Customization services page",
+    const data = await res.json();
 
-    alternates: {
-      canonical: data?.data?.canonical_url || "",
-    },
+    return {
+      title: data?.data?.meta_title || "Customization - Disposable Bazar",
+      description: data?.data?.meta_description || "Customization services for all your disposal needs.",
 
-    robots: {
-      index: data?.data?.robots_index !== "noindex",
-      follow: data?.data?.robots_follow !== "nofollow",
+      alternates: {
+        canonical: data?.data?.canonical_url || "",
+      },
 
-      googleBot: {
+      robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
+
+        googleBot: {
+          index: data?.data?.robots_index !== "noindex",
+          follow: data?.data?.robots_follow !== "nofollow",
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    console.error("Customization metadata fetch failed:", error);
+    return {
+      title: "Customization - Disposable Bazar",
+      description: "Customization Services",
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  }
 }
 
 // 🟩 Load Customization Component

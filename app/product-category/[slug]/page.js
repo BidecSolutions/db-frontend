@@ -234,6 +234,7 @@ const CustomizationCategory = ({ params }) => {
         heroImage={Category?.hero_banner_image || Category?.image || ""}
         path="Shop"
         path2={Category?.name}
+        hideContent={true}
       />
 
       <div className="lg:px-10 px-0 flex">
@@ -254,11 +255,17 @@ const CustomizationCategory = ({ params }) => {
         <section className="flex p-5 lg:w-4/5 w-full">
           <div className="w-full flex flex-col gap-2 text-white">
 
-            <div className="flex justify-between">
-              <h2 className="text-4xl font-bazaar">{Category?.name || ""}</h2>
-              <button onClick={() => setIsFilter(true)}>
-                <RiFilter3Line className="lg:hidden text-4xl p-2 bg-[#1E7773] rounded-full" />
-              </button>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between">
+                <h2 className="text-4xl font-bazaar">{Category?.name || ""}</h2>
+                <button onClick={() => setIsFilter(true)}>
+                  <RiFilter3Line className="lg:hidden text-4xl p-2 bg-[#1E7773] rounded-full" />
+                </button>
+              </div>
+              {/* Breadcrumbs */}
+              <p className="text-sm text-gray-400">
+                <Link href="/">Home</Link> / <Link href="/shop">Shop</Link> / {Category?.name}
+              </p>
             </div>
 
             {loading ? (
