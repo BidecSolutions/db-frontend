@@ -10,7 +10,7 @@ import { Suspense } from "react";
 import ShopDetails from "./ShopDetails";
 import { Loader } from "../../src/components/Loader";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 600;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
@@ -21,7 +21,7 @@ async function getProductData(slug) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug }),
-      cache: "no-store",
+      next: { revalidate: 600 },
     });
     if (!res.ok) return null;
     const json = await res.json();
@@ -33,8 +33,9 @@ async function getProductData(slug) {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const slug = params?.slug || "";
-  const data = await getProductData(slug);
+  const { slug } = await params;
+  const resolvedSlug = slug || "";
+  const data = await getProductData(resolvedSlug);
   const seo = data?.seoMetadata;
   const product = data?.product;
 
@@ -62,8 +63,9 @@ export async function generateMetadata({ params }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const slug = params?.slug || "";
-  const data = await getProductData(slug);
+  const { slug } = await params;
+  const resolvedSlug = slug || "";
+  const data = await getProductData(resolvedSlug);
 
   // Inject schema as ld+json in initial HTML if available
   const schema = data?.seoMetadata?.schema || null;

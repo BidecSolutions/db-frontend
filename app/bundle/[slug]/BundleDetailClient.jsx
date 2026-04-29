@@ -10,12 +10,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { FiX } from "react-icons/fi";
 import CartModal from "../../src/components/cart/CartModal";
 import DecodeTextEditor from "../../src/components/DecodeTextEditor";
+import Image from "next/image";
 
 export default function BundleDetailClient({ initialBundle, slug }) {
   const bundle = initialBundle;
-
   const [selectedImage, setSelectedImage] = useState(
-    bundle?.bundle_images?.[0]?.image || ""
+    bundle?.main_image || bundle?.bundle_images?.[0]?.image || ""
   );
   const [subQuantity, setSubQuantity] = useState(1);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
@@ -65,22 +65,28 @@ export default function BundleDetailClient({ initialBundle, slug }) {
           {/* Images */}
           <div className="lg:w-3/5 md:h-[34rem] h-[20rem] flex flex-row gap-2">
             <div className="w-1/5 flex flex-col gap-1">
-              {(bundle.bundle_images || []).map((img, i) => (
+              {(bundle.bundle_images?.length > 0 ? bundle.bundle_images : []).map((img, i) => (
                 <div key={i} className="w-full h-1/4 py-1">
-                  <img
+                  <Image
+                   
                     className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
-                    src={`${Assets_Url}${img.image}`}
+                    src={`${Assets_Url}/${img.image.replace(/^\//, "")}`}
                     alt={bundle.name}
                     onClick={() => setSelectedImage(img.image)}
+                    width={500}
+                    height={500}
                   />
                 </div>
               ))}
             </div>
-            <div className="w-4/5 rounded-lg bg-[#32303e]">
-              {selectedImage && (
-                <img
-                  className="w-full h-full object-cover rounded-lg"
-                  src={`${Assets_Url}${selectedImage}`}
+            <div className="w-4/5 rounded-lg bg-[#32303e] relative min-h-[300px]">
+              {(selectedImage || bundle.main_image) && (
+                <Image
+                  fill
+                  className="object-cover rounded-lg"
+                  src={selectedImage
+                    ? `${Assets_Url}/${selectedImage.replace(/^\//, "")}`
+                    : `${Assets_Url}/${bundle.main_image.replace(/^\//, "")}`}
                   alt={bundle.name}
                 />
               )}
