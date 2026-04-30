@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
+
   images: {
     remotePatterns: [
       {
@@ -15,11 +16,16 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       }
     ],
+    // Reduce image sizes to prevent timeout in SEO crawlers
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    // Minimize formats for broader compatibility
+    formats: ["image/webp"],
   },
+
   async headers() {
     return [
       {
-        // Next.js compiled static assets — safe to cache forever (content-hashed filenames)
         source: '/_next/static/(.*)',
         headers: [
           {
@@ -29,7 +35,6 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Next.js optimized images — cache 24h, serve stale for 7 days while revalidating
         source: '/_next/image(.*)',
         headers: [
           {
@@ -38,11 +43,25 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // HTML pages, API routes, dynamic routes — NOT touched
-      // Vercel/Next.js handles them automatically with correct no-cache behavior
     ];
   },
+
   compress: true,
+  
+  // Transpile these packages as they may use modern JS features (?. , ??)
+  // that older SEO crawlers don't support.
+  transpilePackages: [
+    "framer-motion",
+    "aos",
+    "swiper",
+    "react-icons",
+    "axios",
+    "lucide-react"
+  ],
+
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
 };
 
 export default nextConfig;
