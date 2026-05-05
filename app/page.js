@@ -10,6 +10,7 @@ export async function generateMetadata() {
 
     return {
       title: data?.data?.meta_title || "Default Title",
+      
       description: data?.data?.meta_description || "Default Description",
       alternates: {
         canonical: data?.data?.canonical_url || "",
