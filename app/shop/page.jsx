@@ -1,7 +1,6 @@
 // ─── SERVER COMPONENT ─────────────────────────────────────────────────────────
 import { Suspense } from "react";
 import CustomHeroSection from "../src/components/CustomHeroSection";
-import CustomSeo from "../src/components/CustomSeo";
 import ShopClient from "../src/Pages/ShopClient";
 // import ShopClient from "../src/Pages/ShopClient";
 
@@ -59,6 +58,7 @@ export async function generateMetadata() {
     description:
       pageData?.meta_description ||
       "Browse our full collection of disposable products.",
+    ...(pageData?.focus_keyword ? { keywords: pageData.focus_keyword } : {}),
     alternates: { canonical: pageData?.canonical_url || "" },
     robots: {
       index: pageData?.robots_index !== "noindex",
@@ -89,11 +89,7 @@ export default async function Page() {
         />
       )}
 
-      <div className="py-15">
-        <Suspense fallback={null}>
-          <CustomSeo id={1} />
-        </Suspense>
-
+      <div className="pt-1 md:pt-4">
         <Suspense fallback={<div className="h-64 bg-[#20202c]" />}>
           <CustomHeroSection
             heading="Shop All"

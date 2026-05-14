@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, useRouter, usePathname } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import axios from '../../src/Utils/axios';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,12 +12,25 @@ import { Loader } from '../../src/components/Loader';
 import { useWishlist } from '../../src/Context/WishlistContext';
 import { useCart } from '../../src/Context/CartContext';
 import { useUser } from '../../src/Context/UserContext';
-import CustomDetailSeo from '../../src/components/CustomDetailSeo';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DecodeTextEditor from '../../src/components/DecodeTextEditor';
 import CartModal from '../../src/components/cart/CartModal';
 import { FiX } from 'react-icons/fi';
+
+/** CMS `product/s/details` expects slug with trailing slash. */
+function productSlugForApi(raw) {
+    if (raw == null || raw === '') return '';
+    let s = String(raw).trim();
+    try {
+        s = decodeURIComponent(s);
+    } catch {
+        /* ignore */
+    }
+    s = s.replace(/^\/+|\/+$/g, '');
+    if (!s) return '';
+    return `${s}/`;
+}
 
 // ─── ShopDetails Client Component ────────────────────────────────────────────
 // Accepts optional `initialData` from SSR page.jsx.
@@ -27,7 +40,7 @@ import { FiX } from 'react-icons/fi';
 function ShopDetails({ initialData = null }) {
     const router = useRouter();
 
-    const [productDetail, setProductDetail] = useState(initialData || []);
+    const [productDetail, setProductDetail] = useState(initialData ?? null);
     const [productVariants, setProductVariants] = useState([]);
     const [selectedProductVariants, setSelectedProductVariants] = useState([]);
     const [productLids, setProductLids] = useState([]);
@@ -119,13 +132,11 @@ function ShopDetails({ initialData = null }) {
         }
     };
 
-    // ─── Pathname-based slug (used for client-side fetch fallback) ────────────
-    const pathname = usePathname();
-    let path = pathname;
-    if (!path.endsWith('/')) {
-        path += '/';
-    }
-    const id = path.split("/product/")[1] || '';
+    const params = useParams();
+    const slugSegment = params?.slug;
+    const id = productSlugForApi(
+        Array.isArray(slugSegment) ? slugSegment[0] : slugSegment ?? ''
+    );
 
     const fetchDataById = async (id) => {
         setIsLoading(true);
@@ -133,21 +144,28 @@ function ShopDetails({ initialData = null }) {
             const response = await axios.public.post(`product/s/details`, {
                 slug: id,
             });
-            const resData = response.data.data;
-            const hasChildProducts = productDetail.product?.childProducts?.length > 0;
-          
-            applyProductData(resData);
-            setIsCustomizeable(productDetail.product?.childProducts?.length > 0);
-            setIsLoading(false);
+            const resData = response.data?.data;
+            if (resData) {
+                applyProductData(resData);
+                setIsCustomizeable((resData.product?.childProducts?.length || 0) > 0);
+            }
         } catch (error) {
             console.log('Error fetching product details:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const fetchReviewById = async (id) => {
+    const fetchReviewById = async (slugForApi) => {
+        const slug = slugForApi.replace(/^\/+|\/+$/g, '');
+        if (!slug) return;
         try {
-            const response = await axios.public.get(`product_reviews/${id}`);
-            setProductReview(response.data);
+            const res = await fetch(
+                `/api/product-reviews/${encodeURIComponent(slug)}/`,
+                { credentials: 'same-origin', headers: { Accept: 'application/json' } }
+            );
+            if (!res.ok) return;
+            setProductReview(await res.json());
         } catch (error) {
             console.log('Error fetching product review:', error);
         }
@@ -162,7 +180,7 @@ function ShopDetails({ initialData = null }) {
             // Still fetch reviews client-side (user-generated, not needed for SEO)
             fetchReviewById(id);
         }
-    }, [id]);
+    }, [id, initialData]);
 
     // Check if current variant is in wishlist
     useEffect(() => {
@@ -203,7 +221,7 @@ function ShopDetails({ initialData = null }) {
             return;
         }
         
-        const variantId = productDetail.product.id;
+        const variantId = productDetail?.product?.id;
         if (!variantId) {
             toast.error("No product variant available");
             return;
@@ -329,19 +347,19 @@ function ShopDetails({ initialData = null }) {
     );
 
     if (isLoading) return <Loader />;
+    if (!productDetail?.product) {
+        return (
+            <div className="relative py-32 px-10 text-white">
+                <p>Product not found.</p>
+                <p className="mt-4">
+                    <Link href="/shop/" className="text-[#1E7773] underline">Back to shop</Link>
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="relative py-32 px-10 text-white overflow-hidden">
-            <CustomDetailSeo
-                title={productDetail?.seoMetadata?.meta_title}
-                des={productDetail?.seoMetadata?.meta_description}
-                focuskey={productDetail?.seoMetadata?.focus_keyword}
-                canonicalUrl={productDetail?.seoMetadata?.canonical_url}
-                schema={productDetail?.seoMetadata?.schema}
-                og_title={productDetail?.product?.name}
-                og_des={productDetail?.product?.description}
-                og_img={productDetail?.product?.product_image[0]?.image}
-            />
             <ToastContainer autoClose={500} />
             {/* Breadcrumb and Title */}
             <div className="flex flex-col py-5">

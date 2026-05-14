@@ -7,7 +7,6 @@ import Blogs from '../components/Home/Blogs'
 import Aos from 'aos';
 import 'aos/dist/aos.css';
 import Link from 'next/link';
-import CustomSeo from '../components/CustomSeo';
 
 
 function AboutUs() {
@@ -26,7 +25,6 @@ useEffect(() => {
     return (
         
         <div className="py-28 relative  ">
-            <CustomSeo id={8} />
             {/* <CustomHeroSection heading='Disposable Bazaar' title='Redefining Disposable Excellence' path='About Us' /> */}
             {/* CustomHeroSection */}
             <div className="flex justify-start items-center text-black relative min-h-[450px]" style={{
@@ -42,11 +40,11 @@ useEffect(() => {
                     <p className='md:text-5xl text-4xl font-bazaar text-white'>Redefining Disposable Excellence</p>
                     <p className='text-lg text-white'><Link href='/'> Home </Link> / About Us</p>
                 </div>
-                <Image data-aos='fade-left' src={`${Image_Url}CustomHeroAssets/rightCup.svg`} className='absolute hidden md:block -bottom-60 right-0 w-35' alt="" width={500} height={500} />
-                <Image data-aos='fade-down' src={`${Image_Url}CustomHeroAssets/glass.svg`} className='absolute top-6 md:right-36 right-0 w-35' alt="" width={500} height={500} />
-                <Image data-aos='fade-left' src={`${Image_Url}CustomHeroAssets/shopper.svg`} className='absolute md:bottom-16 bottom-8 right-0 w-35' alt="" width={500} height={500} />
-                <Image data-aos='fade-up' src={`${Image_Url}CustomHeroAssets/basket.svg`} className='absolute hidden md:block bottom-16 right-[30rem] w-35' alt="" width={500} height={500} />
-                <Image data-aos='fade-right' src={`${Image_Url}CustomHeroAssets/shoper.svg`} className='absolute hidden md:block -bottom-44 left-24 w-25' alt="" width={500} height={500} />
+                <Image data-aos='fade-left' src={`${Image_Url}CustomHeroAssets/rightCup.svg`} className='absolute hidden md:block -bottom-60 right-0 w-35' alt="" width={200} height={200} />
+                <Image data-aos='fade-down' src={`${Image_Url}CustomHeroAssets/glass.svg`} className='absolute top-6 md:right-36 right-0 w-35' alt="" width={200} height={200} />
+                <Image data-aos='fade-left' src={`${Image_Url}CustomHeroAssets/shopper.svg`} className='absolute md:bottom-16 bottom-8 right-0 w-35' alt="" width={200} height={200} />
+                <Image data-aos='fade-up' src={`${Image_Url}CustomHeroAssets/basket.svg`} className='absolute hidden md:block bottom-16 right-[30rem] w-35' alt="" width={200} height={200} />
+                <Image data-aos='fade-right' src={`${Image_Url}CustomHeroAssets/shoper.svg`} className='absolute hidden md:block -bottom-44 left-24 w-25' alt="" width={200} height={200} />
             </div>
             <div className='w-full mt-20 text-white'>
                 {/* About Section */}
@@ -102,10 +100,10 @@ useEffect(() => {
                     backgroundSize: 'cover',
                     backgroundRepeat: 'no-repeat',
                 }}>
-                    <Image data-aos='fade-right' src={`${Image_Url}AboutUs/plate.svg`} className='absolute hidden md:block top-0 left-0 w-18' alt="" width={500} height={500} />
-                    <Image data-aos='fade-left' src={`${Image_Url}AboutUs/cup.svg`} className='absolute hidden md:block top-0 right-4 w-18' alt="" width={500} height={500} />
-                    <Image data-aos='fade-left' src={`${Image_Url}AboutUs/platter1.svg`} className='absolute hidden md:block bottom-0 right-0 w-18' alt="" width={500} height={500} />
-                    <Image data-aos='fade-right' src={`${Image_Url}AboutUs/platter2.svg`} className='absolute hidden md:block -bottom-80 left-0 w-18' alt="" width={500} height={500} />
+                    <Image data-aos='fade-right' src={`${Image_Url}AboutUs/plate.svg`} className='absolute hidden md:block top-0 left-0 w-18' alt="" width={150} height={150} />
+                    <Image data-aos='fade-left' src={`${Image_Url}AboutUs/cup.svg`} className='absolute hidden md:block top-0 right-4 w-18' alt="" width={150} height={150} />
+                    <Image data-aos='fade-left' src={`${Image_Url}AboutUs/platter1.svg`} className='absolute hidden md:block bottom-0 right-0 w-18' alt="" width={150} height={500} />
+                    <Image data-aos='fade-right' src={`${Image_Url}AboutUs/platter2.svg`} className='absolute hidden md:block -bottom-80 left-0 w-18' alt="" width={150} height={500} />
                     <h2 className="text-2xl text-center my-4 text-[#1E7773] font-bazaar">Why Choose Us</h2>
                     <h3 className="text-3xl text-center md:text-6xl text-white font-bazaar">Experience the Disposable <br /> Bazaar Difference</h3>
 

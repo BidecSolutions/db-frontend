@@ -28,7 +28,7 @@ function Header() {
 
     const [categories, setCategories] = useState([]);
     const kraftCategory = categories.find(
-        (cat) => cat.slug === "kraft-paper-products"
+        (cat) => cat.slug === "kraft-paper/"
     );
 
 
@@ -353,23 +353,25 @@ useEffect(() => {
                                 </div>
 
                                 {isDropdown && (
-                                    <div className="absolute z-10 sm:col-span-6 col-span-full w-full  rounded-lg top-10 left-0 overflow-y-auto h-56 bg-white border border-gray-200">
+                                    <div className="absolute z-10 sm:col-span-6 col-span-full w-full rounded-lg top-10 left-0 overflow-y-auto h-56 bg-white border border-gray-200">
                                         {Array.isArray(categories) &&
-
                                             categories.map((cat) => (
                                                 <div key={cat.id}>
-                                                    <div
-                                                        className="text-black p-2 px-4 cursor-pointer hover:bg-gray-100 flex justify-between items-center"
-                                                        onClick={() => handleCategoryLink(cat)}
-                                                    >
-                                                        <span className="text-sm">{cat.name}</span>
+                                                    <div className="flex justify-between items-center hover:bg-gray-100">
+                                                        <Link
+                                                            href={`/product-category/${cat.slug}/`}
+                                                            className="text-black text-sm p-2 px-4 flex-1 cursor-pointer"
+                                                            onClick={() => setCategory(cat)}
+                                                        >
+                                                            {cat.name}
+                                                        </Link>
                                                         {cat.subCategories?.length > 0 && (
                                                             <button
                                                                 onClick={(e) => {
-                                                                    e.stopPropagation(); // Prevent parent click
+                                                                    e.stopPropagation();
                                                                     toggleSubcategories(cat.id);
                                                                 }}
-                                                                className="text-gray-500 text-3xl hover:text-black"
+                                                                className="text-gray-500 text-3xl hover:text-black px-3"
                                                             >
                                                                 {expandedCategories.includes(cat.id) ? "-" : "+"}
                                                             </button>
@@ -378,26 +380,19 @@ useEffect(() => {
                                                     {expandedCategories.includes(cat.id) && (
                                                         <div className="pl-8">
                                                             {cat.subCategories.map((subCat) => (
-                                                                <div
+                                                                <Link
                                                                     key={subCat.id}
-                                                                    className="text-zinc-900 p-2 px-4 cursor-pointer hover:bg-gray-200 text-xs"
-                                                                    onClick={() => handleCategoryLink(subCat, cat.slug)}
+                                                                    href={`/product-category/${cat.slug}/${subCat.slug}/`}
+                                                                    className="block text-zinc-900 p-2 px-4 hover:bg-gray-200 text-xs cursor-pointer"
+                                                                    onClick={() => setCategory(subCat)}
                                                                 >
                                                                     {subCat.name}
-                                                                </div>
+                                                                </Link>
                                                             ))}
                                                         </div>
                                                     )}
                                                 </div>
-
                                             ))}
-                                        {/* {subCategories.length === 0 ? (
-                                            <div className="">{subCategories.map((data, index) => (
-                                                <div className="">
-                                                    {data}
-                                                </div>
-                                            ))}</div>
-                                        ) : null} */}
                                     </div>
                                 )}
                             </div>
@@ -454,15 +449,15 @@ useEffect(() => {
                                             }, 500);
                                         }}
                                     >
-                                        <span
-                                            onClick={() => handleCategoryLink(kraftCategory)}
+                                        <Link
+                                            href={`/product-category/${kraftCategory.slug}/`}
                                             className={`hover:text-[#1E7773] duration-300 ${pathname.includes(kraftCategory.slug)
                                                 ? "text-[#1E7773]"
                                                 : "text-black"
                                                 }`}
                                         >
                                             {kraftCategory.name}
-                                        </span>
+                                        </Link>
 
                                         <span className="text-[11px] font-semibold px-2 py-[2px] rounded bg-red-700 text-white animate-pulse">
                                             NEW
@@ -473,12 +468,13 @@ useEffect(() => {
                                         {showKraftDropdown && kraftCategory.subCategories?.length > 0 && (
                                             <ul className="absolute top-full left-0 mt-2 bg-white text-black shadow-lg rounded-md w-56 z-50">
                                                 {kraftCategory.subCategories.map((sub) => (
-                                                    <li
-                                                        key={sub.id}
-                                                        onClick={() => handleCategoryLink(sub, kraftCategory.slug)}
-                                                        className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                                                    >
-                                                        {sub.name}
+                                                    <li key={sub.id}>
+                                                        <Link
+                                                            href={`/product-category/${kraftCategory.slug}/${sub.slug}/`}
+                                                            className="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                                                        >
+                                                            {sub.name}
+                                                        </Link>
                                                     </li>
                                                 ))}
                                             </ul>
@@ -657,6 +653,52 @@ useEffect(() => {
                         <CiSearch />
                     </button>
                 </form>
+
+                {/* Mobile Category Dropdown */}
+                <div className="relative w-full">
+                    <button
+                        onClick={() => setIsDropdown(!isDropdown)}
+                        className="w-full flex justify-between items-center bg-white text-black rounded-lg p-2 px-4"
+                    >
+                        <span>{category === "null" || !category ? "Select a Category" : category?.name}</span>
+                        <PiCaretDownThin size={20} className={`transition-transform duration-300 ${isDropdown ? "rotate-180" : ""}`} />
+                    </button>
+                    {isDropdown && (
+                        <div className="absolute z-50 w-full rounded-lg top-12 left-0 overflow-y-auto max-h-56 bg-white border border-gray-200 shadow-lg">
+                            {Array.isArray(categories) && categories.map((cat) => (
+                                <div key={cat.id}>
+                                    <div
+                                        className="text-black p-2 px-4 cursor-pointer hover:bg-gray-100 flex justify-between items-center"
+                                        onClick={() => { handleCategoryLink(cat); setIsDropdown(false); setMobMenu(false); }}
+                                    >
+                                        <span className="text-sm">{cat.name}</span>
+                                        {cat.subCategories?.length > 0 && (
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); toggleSubcategories(cat.id); }}
+                                                className="text-gray-500 text-2xl hover:text-black"
+                                            >
+                                                {expandedCategories.includes(cat.id) ? "−" : "+"}
+                                            </button>
+                                        )}
+                                    </div>
+                                    {expandedCategories.includes(cat.id) && (
+                                        <div className="pl-6">
+                                            {cat.subCategories.map((subCat) => (
+                                                <div
+                                                    key={subCat.id}
+                                                    className="text-zinc-900 p-2 px-4 cursor-pointer hover:bg-gray-200 text-xs"
+                                                    onClick={() => { handleCategoryLink(subCat, cat.slug); setIsDropdown(false); setMobMenu(false); }}
+                                                >
+                                                    {subCat.name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
                 <ul className="flex flex-row items-center justify-center gap-5 text-sm cursor-pointer">
                     <li>

@@ -7,7 +7,6 @@ import { RxCross2 } from "react-icons/rx";
 import { MdOutlineNavigateBefore } from "react-icons/md";
 import Link from "next/link";
 import { useCart } from "../../Context/CartContext";
-import CustomSeo from "../../components/CustomSeo";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Image from "next/image";
@@ -72,7 +71,6 @@ function Cart() {
     return (
         <div className="relative py-32 md:px-10 px-5 ">
             <ToastContainer autoClose={500} />
-            <CustomSeo slug="cart" />
 
             <div className="text-white py-4">
                 <Hamburger firstPage="Home" secondPage="Cart" />
@@ -176,7 +174,7 @@ function Cart() {
                         ? `Rs ${Number(product.price_per_piece).toLocaleString()}`
                         : product.product_price && Number(product.product_price) > 0
                             ? `Rs ${Number(product.product_price).toLocaleString()}`
-                            : "N/A"}
+                            : "0"}
                 </div>
 
                 {/* Printing Price/Piece Column (2 spans) */}
@@ -185,7 +183,7 @@ function Cart() {
                         <span className="font-semibold text-white text-sm">
                             {product?.packaging_options?.price && Number(product?.packaging_options?.price) > 0
                                 ? `Rs ${Number(product?.packaging_options?.price).toLocaleString()}`
-                                : "N/A"}
+                                : "0"}
                         </span>
                     </div>
                 </div>

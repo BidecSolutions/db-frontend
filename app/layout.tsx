@@ -9,7 +9,12 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import Header from "../app/src/components/Header/Header";
 import Footer from "../app/src/components/Footer/Footer";
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Disposable Bazaar",
   description: "Quality disposable products",
 };
@@ -21,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <GoogleOAuthProvider clientId='341574951595-7kmbo799rdp05d4dcjgn0vfkpfsrrs44.apps.googleusercontent.com'>
           <UserProvider>
             <CartProvider>

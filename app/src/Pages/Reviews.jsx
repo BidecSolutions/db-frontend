@@ -12,7 +12,6 @@ import { PiStarFill } from 'react-icons/pi';
 import { VscShare } from 'react-icons/vsc';
 import { AiFillDislike, AiFillLike } from 'react-icons/ai';
 import axios from '../Utils/axios';
-import CustomSeo from '../components/CustomSeo';
 
 
 const Reviews = ({ initialReviews = null }) => {
@@ -66,7 +65,6 @@ const Reviews = ({ initialReviews = null }) => {
 
     return (
         <div>
-            <CustomSeo id={4} />
             <div className='relative mb-12 py-30'>
                 <div className="flex justify-center items-center text-black relative min-h-[500px]  "
                     style={{
@@ -89,10 +87,10 @@ const Reviews = ({ initialReviews = null }) => {
                     </div>
 
                     <Image data-aos='fade-down' src={`${Image_Url}CustomHeroAssets/glass.svg`}
-                        className='absolute top-6 md:right-36 right-0 w-25' alt="" width={500} height={500} />
+                        className='absolute top-6 md:right-36 right-0 w-25' alt="" width={70} height={70} />
               
                     <Image data-aos='fade-up' src={`${Image_Url}CustomHeroAssets/basket.svg`}
-                        className='absolute hidden md:block bottom-16 right-[30rem] w-25' alt="" width={500} height={500} />
+                        className='absolute hidden md:block bottom-16 right-[30rem] w-25' alt="" width={70} height={70} />
                 </div>
 
                 <div className='absolute -bottom-55 w-full'>

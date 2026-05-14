@@ -3,6 +3,28 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   trailingSlash: true,
 
+  // Transpile deps that ship modern JS (optional chaining, etc.) so crawler / older engines
+  // don’t parse syntax errors; see https://nextjs.org/docs/app/api-reference/config/next-config-js/transpilePackages
+  transpilePackages: [
+    "@react-google-maps/api",
+    "@react-oauth/google",
+    "aos",
+    "axios",
+    "dompurify",
+    "framer-motion",
+    "html-react-parser",
+    "html2canvas",
+    "isomorphic-dompurify",
+    "js-confetti",
+    "leaflet",
+    "react-icons",
+    "react-leaflet",
+    "react-toastify",
+    "swiper",
+    "uuid",
+    "lucide-react",
+  ],
+
   images: {
     remotePatterns: [
       {
@@ -47,17 +69,6 @@ const nextConfig: NextConfig = {
   },
 
   compress: true,
-
-  // Transpile these packages as they may use modern JS features (?. , ??)
-  // that older SEO crawlers don't support.
-  transpilePackages: [
-    "framer-motion",
-    "aos",
-    "swiper",
-    "react-icons",
-    "axios",
-    "lucide-react"
-  ],
 
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
